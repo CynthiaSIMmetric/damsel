@@ -1,0 +1,12 @@
+CompileFlags:
+  Add:
+    - -std=c++23
+    - -Iinclude
+    - -Wall
+    - -Wextra
+
+Diagnostics:
+  UnusedIncludes: Strict
+
+Index:
+  Background: Build
