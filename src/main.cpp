@@ -1,5 +1,6 @@
 #include <filesystem>
-#include <fstream>
+#include <iostream>
+#include <ostream>
 
 std::filesystem::path data_path{std::filesystem::current_path() / "data" /
                                 "weather_stations.csv"};
@@ -13,10 +14,10 @@ int main()
     // we keep 3 data elements for each weather station min, max and total
     // we do the mean calculation at the end
     // display the output
-
-    ifstream file{};
+    std::cout << data_path.string() << std::endl;
 }
 
 void verify()
 {
+    return;
 }

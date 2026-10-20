@@ -6,12 +6,12 @@ workspace "damsel"
 project "damsel"
     kind "ConsoleApp"
     language "C++"
-    cdialect "C++23"
+    cppdialect "C++23"
 
     targetdir "bin/%{cfg.buildcfg}"
     objdir "obj/%{cfg.buildcfg}"
 
-    files { "src/**.c", "include/**.h" }
+    files { "src/**.cpp", "include/**.hpp" }
     includedirs { "include" }
 
     warnings "Extra"

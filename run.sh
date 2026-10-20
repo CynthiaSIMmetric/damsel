@@ -15,6 +15,9 @@ fi
 case "$1" in
     d) config=debug;   dir=Debug ;;
     r) config=release; dir=Release ;;
+    c)
+        make -C build clean
+        find ./obj -delete
     *) usage; exit 1 ;;
 esac
 
