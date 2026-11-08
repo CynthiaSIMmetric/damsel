@@ -1,0 +1,42 @@
+# Build output (premake)
+bin/
+obj/
+
+# Premake-generated files
+build/
+Makefile
+*.make
+
+# Object files and dependency files
+*.o
+*.obj
+*.d
+*.gch
+*.pch
+
+# Libraries
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debug and profiling
+*.pdb
+*.ilk
+*.dSYM/
+core
+core.*
+vgcore.*
+perf.data*
+callgrind.out.*
+gmon.out
+
+# Large data (1brc)
+data/measurements.txt

@@ -2,9 +2,10 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: $0 <d|r>"
+    echo "Usage: $0 <d|r|c>"
     echo "  d  build and run Debug"
     echo "  r  build and run Release"
+    echo "  c  clean the build and obj directories"
 }
 
 if [ "$#" -ne 1 ]; then
@@ -18,6 +19,8 @@ case "$1" in
     c)
         make -C build clean
         find ./obj -delete
+        exit 0
+        ;;
     *) usage; exit 1 ;;
 esac
 
@@ -25,4 +28,4 @@ cd "$(dirname "$0")"
 
 premake5 gmake
 make -C build config="$config"
-"./bin/$dir/damsel"
+time ./bin/$dir/damsel
