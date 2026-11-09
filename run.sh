@@ -28,4 +28,8 @@ cd "$(dirname "$0")"
 
 premake5 gmake
 make -C build config="$config"
-time ./bin/$dir/damsel
+SECONDS=0
+./bin/$dir/damsel | tee output.txt
+echo -e "\ntook $SECONDS\ndiff: "
+diff -q ./output.txt example/example-output.txt
+echo "diff DONE\nexiting..."

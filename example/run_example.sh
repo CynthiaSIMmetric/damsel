@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 SCRIPT_DIR=$(dirname $(readlink -f "$0")) 
 cd ${SCRIPT_DIR}/1brc/
-./calculate_average_thomaswue.sh
+SECONDS=0
+./calculate_average_thomaswue.sh | tee ../example-output.txt
+echo "$SECONDS" > ../example-time
