@@ -29,7 +29,9 @@ cd "$(dirname "$0")"
 premake5 gmake
 make -C build config="$config"
 SECONDS=0
-./bin/$dir/damsel | tee output.txt
-echo -e "\ntook $SECONDS\ndiff: "
-diff -q ./output.txt example/example-output.txt
-echo "diff DONE\nexiting..."
+./bin/$dir/damsel > output.txt
+echo -e "FINISHED: took $SECONDS\ndiff: "
+if diff -q ./output.txt example/example-output.txt; then
+    echo "SUCCESS: files match expected output"
+fi
+echo "exiting..."

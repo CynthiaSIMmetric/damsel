@@ -1,0 +1,44 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-DDEBUG",
+      "-I../include",
+      "-m64",
+      "-ffloat-store",
+      "-O0",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++23",
+      "-c",
+      "-o",
+      "../obj/Debug/main.o",
+      "../src/main.cpp"
+    ],
+    "directory": "/home/trp/coding/exp/damsel/build",
+    "file": "/home/trp/coding/exp/damsel/src/main.cpp",
+    "output": "/home/trp/coding/exp/damsel/obj/Debug/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-DDEBUG",
+      "-I../include",
+      "-m64",
+      "-ffloat-store",
+      "-O0",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++23",
+      "-c",
+      "-o",
+      "../obj/Debug/utils.o",
+      "../src/utils.cpp"
+    ],
+    "directory": "/home/trp/coding/exp/damsel/build",
+    "file": "/home/trp/coding/exp/damsel/src/utils.cpp",
+    "output": "/home/trp/coding/exp/damsel/obj/Debug/utils.o"
+  }
+]

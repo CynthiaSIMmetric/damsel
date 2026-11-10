@@ -18,30 +18,18 @@ ifstream data_stream{data_path};
 string sbuf{};
 constexpr size_t SBUF_RESERVE_AMOUNT = 64;
 
-// struct CollateLess
-// {
-//     locale loc;
-//     explicit CollateLess(const locale &l = locale("en_US.UTF-8")) : loc(l)
-//     {
-//     }
+struct map_contents
+{
+    float max;
+    float min;
+    float mean;
+    size_t count;
+};
 
-//     bool operator()(const string &a, const string &b) const
-//     {
-//         const auto &coll = use_facet<collate<char>>(loc);
-//         return coll.compare(a.data(),
-//                             a.data() + a.size(),
-//                             b.data(),
-//                             b.data() + b.size()) < 0;
-//     }
-// };
-
-// map<string, float, CollateLess> map_max;
-// map<string, float, CollateLess> map_min;
-// map<string, pair<float, size_t>, CollateLess> map_mean;
-
-map<string, float> map_max;
-map<string, float> map_min;
-map<string, pair<float, size_t>> map_mean;
+// map<string, float> map_max;
+// map<string, float> map_min;
+// map<string, pair<float, size_t>> map_mean;
+map<string, struct map_contents> mapv;
 
 // parse the first two lines as they are comments
 void prepare_file()
@@ -52,21 +40,20 @@ void prepare_file()
 
 void print_result()
 {
-    auto it_max = map_max.begin();
-    auto it_min = map_min.begin();
-    auto it_mean = map_mean.begin();
+    // auto it_max = map_max.begin();
+    // auto it_min = map_min.begin();
+    // auto it_mean = map_mean.begin();
+    auto it = mapv.begin();
     print("{{");
-    for (size_t i{0}; i < map_max.size(); i++)
+    for (size_t i{0}; i < mapv.size(); i++)
     {
         print("{}={:.1f}/{:.1f}/{:.1f}",
-              it_max->first,
-              it_min->second,
-              it_mean->second.first,
-              it_max->second);
-        it_max++;
-        it_min++;
-        it_mean++;
-        if (i < map_max.size() - 1)
+              it->first,
+              it->second.min,
+              it->second.mean,
+              it->second.max);
+        it++;
+        if (i < mapv.size() - 1)
         {
             print(", ");
         }
@@ -76,8 +63,8 @@ void print_result()
 
 void calculate_means()
 {
-    for_each(map_mean.begin(),
-             map_mean.end(),
+    for_each(mapv.begin(),
+             mapv.end(),
              [](auto &obj)
              {
                  // println("calculating mean {}: {}/{} = {}",
@@ -85,8 +72,9 @@ void calculate_means()
                  //         obj.second.first,
                  //         obj.second.second,
                  //         obj.second.first / obj.second.second);
-                 auto temp = obj.second.first / obj.second.second;
-                 obj.second.first = (ceil(temp * 10.0 - 0.5) / 10.0) + 0.0f;
+                 auto temp = obj.second.mean / obj.second.count;
+                 obj.second.mean = (ceil(temp * 10.0 - 0.5) / 10.0) + 0.0f;
+                 // obj.second.first = (ceil(temp * 10.0 - 0.5) / 10.0) + 0.0f;
              });
 }
 void parse_file()
@@ -104,27 +92,17 @@ void parse_file()
         const float temperature_float{stof(temperature_string)};
 
         float inserted{temperature_float};
-        if (map_max.contains(city))
+        if (mapv.contains(city))
         {
-            inserted = max(inserted, map_max.at(city));
+            mapv[city].max = max(inserted, mapv[city].max);
+            mapv[city].min = min(inserted, mapv[city].min);
+            mapv[city].mean += inserted;
+            mapv[city].count++;
         }
-        map_max.insert_or_assign(city, inserted);
-
-        inserted = temperature_float;
-        if (map_min.contains(city))
+        else
         {
-            inserted = min(inserted, map_min.at(city));
+            mapv[city] = map_contents{inserted, inserted, inserted, 1};
         }
-        map_min.insert_or_assign(city, inserted);
-
-        inserted = temperature_float;
-        auto count{1};
-        if (map_mean.contains(city))
-        {
-            inserted += map_mean.at(city).first;
-            count += map_mean.at(city).second;
-        }
-        map_mean.insert_or_assign(city, pair<float, size_t>{inserted, count});
         getline(data_stream, sbuf);
     }
 
@@ -145,10 +123,8 @@ int main(int argc, char **argv)
         cout << "failed to find " << data_path.string() << "\n";
         return 1;
     }
-    // cout << "loaded file successfully: " << data_path.string() << endl;
 
     sbuf.reserve(SBUF_RESERVE_AMOUNT);
-    // cout << "reserved " << SBUF_RESERVE_AMOUNT << " bytes for sbuf\n";
 
     prepare_file();
     parse_file();
