@@ -15,7 +15,6 @@ project "damsel"
     includedirs { "include" }
 
     warnings "Extra"
-    floatingpoint "Strict"
 
     filter "configurations:Debug"
         defines { "DEBUG" }

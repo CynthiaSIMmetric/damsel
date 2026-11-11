@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
@@ -20,9 +21,9 @@ constexpr size_t SBUF_RESERVE_AMOUNT = 64;
 
 struct map_contents
 {
-    float max;
-    float min;
-    float mean;
+    int64_t max;
+    int64_t min;
+    int64_t mean;
     size_t count;
 };
 
@@ -31,27 +32,43 @@ struct map_contents
 // map<string, pair<float, size_t>> map_mean;
 map<string, struct map_contents> mapv;
 
-// parse the first two lines as they are comments
-void prepare_file()
+constexpr int64_t my_div(const int64_t num, const int64_t den)
 {
-    getline(data_stream, sbuf);
-    getline(data_stream, sbuf);
+
+    auto ret = num / den;
+    if ((num % den != 0) && (num < 0))
+        --ret;
+    return ret;
 }
 
+string fmt_int_float_to_string(int64_t val)
+{
+    string ret;
+    if (val < 0)
+    {
+        ret = "-";
+        val = -val;
+    }
+    return ret + to_string(val / 10) + "." + to_string(val % 10);
+}
 void print_result()
 {
     // auto it_max = map_max.begin();
     // auto it_min = map_min.begin();
     // auto it_mean = map_mean.begin();
-    auto it = mapv.begin();
+    auto it{mapv.begin()};
     print("{{");
     for (size_t i{0}; i < mapv.size(); i++)
     {
-        print("{}={:.1f}/{:.1f}/{:.1f}",
+        const int64_t smean = it->second.mean;
+        const int64_t scount = it->second.count;
+
+        int64_t my_mean{my_div(smean * 2 + scount, 2 * scount)};
+        print("{}={}/{}/{}",
               it->first,
-              it->second.min,
-              it->second.mean,
-              it->second.max);
+              fmt_int_float_to_string(it->second.min),
+              fmt_int_float_to_string(my_mean),
+              fmt_int_float_to_string(it->second.max));
         it++;
         if (i < mapv.size() - 1)
         {
@@ -61,22 +78,22 @@ void print_result()
     println("}}");
 }
 
-void calculate_means()
-{
-    for_each(mapv.begin(),
-             mapv.end(),
-             [](auto &obj)
-             {
-                 // println("calculating mean {}: {}/{} = {}",
-                 //         obj.first,
-                 //         obj.second.first,
-                 //         obj.second.second,
-                 //         obj.second.first / obj.second.second);
-                 auto temp = obj.second.mean / obj.second.count;
-                 obj.second.mean = (ceil(temp * 10.0 - 0.5) / 10.0) + 0.0f;
-                 // obj.second.first = (ceil(temp * 10.0 - 0.5) / 10.0) + 0.0f;
-             });
-}
+// void calculate_means()
+// {
+//     for_each(mapv.begin(),
+//              mapv.end(),
+//              [](auto &obj)
+//              {
+//                  obrc::log("mean: {} count: {} res: {}",
+//                            obj.second.mean,
+//                            obj.second.count,
+//                            round(obj.second.mean / (double)
+//                            obj.second.count));
+
+//                  obj.second.mean = round(obj.second.mean / (double)
+//                  obj.second.count);
+//              });
+// }
 void parse_file()
 {
     // load each line:
@@ -88,10 +105,13 @@ void parse_file()
         obrc::log("sbuf: {}", sbuf);
         const size_t separator_index{sbuf.find(';')};
         const string city{sbuf.substr(0, separator_index)};
-        const string temperature_string{sbuf.substr(separator_index + 1)};
-        const float temperature_float{stof(temperature_string)};
+        const string temp_string{sbuf.substr(separator_index + 1)};
+        const float temp_float{stof(temp_string)};
+        const int_fast32_t temp_int{static_cast<int_fast32_t>(temp_float * 10)};
+        obrc::log(
+            "tfloat: {} tint: {} tstr: {}", temp_float, temp_int, temp_string);
 
-        float inserted{temperature_float};
+        int_fast32_t inserted{temp_int};
         if (mapv.contains(city))
         {
             mapv[city].max = max(inserted, mapv[city].max);
@@ -106,7 +126,7 @@ void parse_file()
         getline(data_stream, sbuf);
     }
 
-    calculate_means();
+    // calculate_means();
 }
 
 int main(int argc, char **argv)
@@ -126,7 +146,6 @@ int main(int argc, char **argv)
 
     sbuf.reserve(SBUF_RESERVE_AMOUNT);
 
-    prepare_file();
     parse_file();
     print_result();
 }
